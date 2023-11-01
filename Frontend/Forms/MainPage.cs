@@ -18,6 +18,7 @@ namespace ArduinoMonitor.Frontend.Forms
     public partial class MainPage : Form
     {
         private VerticalProgressBar _tempProgressBar;
+        private Label label_TemperatureMeasurement;
 
         private int CurrentHumidity { get; set; }
         private int CurrentTemperature { get; set; }
@@ -25,6 +26,10 @@ namespace ArduinoMonitor.Frontend.Forms
         private int _maxHistoryCount = 40;
         private int _maxTemperature = 70;
         private int _minTemperature = -20;
+        private int chart_Temp_x = 1;
+        private int chart_Humidity_x = 1;
+        private int chart_x_Max = 20;
+
 
 
         public MainPage()
@@ -32,6 +37,13 @@ namespace ArduinoMonitor.Frontend.Forms
             InitializeComponent();
             InitializeGUI();
             AssignDataToCharts();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            // Code
+            DataProcessor.ArduinoUpdateEvent -= ProcessArduinoUpdate;
         }
 
         private void InitializeGUI()
@@ -47,11 +59,10 @@ namespace ArduinoMonitor.Frontend.Forms
             chart_Temperature.ChartAreas[0].AxisY.Minimum = -20;
             chart_Temperature.ChartAreas["ChartArea1"].AxisX.LabelStyle.Enabled = false;
 
-            _tempProgressBar = new VerticalProgressBar()
-            {
-                Size = new Size(30, 130),
-                Location = new Point(40, 50),
-            };
+            _tempProgressBar = new VerticalProgressBar();
+
+            _tempProgressBar.Size = new Size(30, 130);
+            _tempProgressBar.Location = new Point(40, 50);
 
             _tempProgressBar.BackgroundBarColor = GUIConstants.COLOR_LightGray;
             _tempProgressBar.ProgressBarColor = GUIConstants.COLOR_TemperatureBarFill;
@@ -94,17 +105,19 @@ namespace ArduinoMonitor.Frontend.Forms
             // LABEL Temperature Measured
             //
 
-            Label label_TemperatureMeasurement = new Label();
+            label_TemperatureMeasurement = new Label();
+            label_TemperatureMeasurement.Location = new Point(_tempProgressBar.Location.X + _tempProgressBar.Width + 20,
+                                                              _tempProgressBar.Location.Y + (_tempProgressBar.Height / 2) - 20);
 
-            label_TemperatureMeasurement.Location = new Point(_tempProgressBar.Location.X + _tempProgressBar.Width + 40,
-                                                              -_tempProgressBar.Location.Y + (_tempProgressBar.Size.Height / 2));
+            label_Test.Text = $"bar location Y: {_tempProgressBar.Location}, half: {_tempProgressBar.Size.Height / 2}, label loc: {label_TemperatureMeasurement.Location}";
 
-            label_MinTemp.Text = "32 °C";
-            label_MinTemp.Font = new Font("Arial", 16, FontStyle.Bold);
+            label_TemperatureMeasurement.Text = "32 °C";
+            label_TemperatureMeasurement.Visible = true;
+            label_TemperatureMeasurement.Font = new Font("Arial", 15, FontStyle.Bold);
             //label_MaxTemp. = true;
-            label_MinTemp.ForeColor = GUIConstants.COLOR_TemperatureBarFill;
-
+            label_TemperatureMeasurement.ForeColor = GUIConstants.COLOR_TemperatureBarFill;
             panel_Temperature_Parent.Controls.Add(label_TemperatureMeasurement);
+
 
         }
 
@@ -116,7 +129,7 @@ namespace ArduinoMonitor.Frontend.Forms
             if (this.InvokeRequired)
             {
                 this.Invoke((MethodInvoker)delegate { UpdateForm(e); });
-            }          
+            }
 
         }
 
@@ -126,33 +139,44 @@ namespace ArduinoMonitor.Frontend.Forms
             int minAbsolute = Math.Abs(_minTemperature);
             int size = Math.Abs(_maxTemperature) + minAbsolute;
             int position = minAbsolute + temperature;
-            //int percent = (int)((temperature / ))
-            return 30;
+            decimal t1 = (decimal)position / (decimal)size;
+            int percent = (int)(t1 * 100M);
+
+            //label_Test.Text = $"Temperature: {temperature}. Percent: {percent}. minAbsolute: {minAbsolute} - size: {size} - position: {position} - t1: {t1}";
+            return percent;
         }
 
         private void UpdateForm(ArduinoUpdateEventModel e)
         {
             if (e.Temperature > _maxTemperature) e.Temperature = _maxTemperature;
             if (e.Temperature < _minTemperature) e.Temperature = _minTemperature;
+            if (e.Temperature == 0) e.Temperature = 1;
 
             progress_Humidity.Value = e.Humidity;
             _tempProgressBar.Percentage = GetTemperaturePercentage(e.Temperature);
-            
+            label_TemperatureMeasurement.Text = $"{e.Temperature} °C";
+            progress_Humidity.Text = $"{e.Humidity}%";
+
 
             // Add to the collections for the charts, capping it at maxHistoryCount
 
-            chart_Temperature.Series[0].Points.AddY(e.Temperature);
-            //chart_Temperature.Series[0].Points.
-            if (chart_Temperature.Series[0].Points.Count > _maxHistoryCount)
-            {
-                chart_Temperature.Series[0].Points.RemoveAt(0);
-            }
+            // Temperature chart
+            chart_Temperature.Series[0].Points.AddXY(chart_Temp_x, e.Temperature);
+            chart_Temp_x++;
+            //if(chart_Temperature.Series[0].Points.Count > chart_x_Max) chart_Temperature.Series[0].Points.RemoveAt(0);
+            //if (chart_Temperature.Series[0].Points.Count > _maxHistoryCount)
+            //{
+            //    chart_Temperature.Series[0].Points.RemoveAt(0);
+            //}
 
-            chart_Humidity.Series[0].Points.AddY(e.Humidity);
-            if (chart_Humidity.Series[0].Points.Count > _maxHistoryCount)
-            {
-                chart_Humidity.Series[0].Points.RemoveAt(0);
-            }
+            // Humidity chart
+            chart_Humidity.Series[0].Points.AddXY(chart_Humidity_x, e.Humidity);
+            chart_Humidity_x++;
+            //if (chart_Humidity_x > chart_x_Max) chart_Humidity_x = 1;
+            //if (chart_Humidity.Series[0].Points.Count > _maxHistoryCount)
+            //{
+            //    chart_Humidity.Series[0].Points.RemoveAt(0);
+            //}
         }
 
         private void AssignDataToCharts()

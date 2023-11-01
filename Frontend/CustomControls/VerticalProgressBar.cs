@@ -44,8 +44,9 @@ namespace ArduinoMonitor.Frontend.CustomControls
 
             // Draw the background bar
             g.FillRectangle(new SolidBrush(BackgroundBarColor), new Rectangle(0, 0, this.Width, this.Height));
-            int treshold = (int)(((decimal)this.Height / 100) * _percent);
+            int treshold = this.Height - (int)(((decimal)this.Height / 100) * _percent);
             // Draw the progress bar
+            
             g.FillRectangle(new SolidBrush(ProgressBarColor),
                             0,
                             treshold,

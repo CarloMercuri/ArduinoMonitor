@@ -33,9 +33,9 @@ namespace ArduinoMonitor.Network.DataHandler
                     count = 0;
 
                     model.Temperature += 2;
-                    if(model.Temperature > 65)
+                    if(model.Temperature > 70)
                     {
-                        model.Temperature = -20;
+                        model.Temperature = -30;
                     }
 
                     model.Humidity += 2;

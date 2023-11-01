@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             progress_Humidity = new CircularProgressBar.CircularProgressBar();
             panel_Humidity_Parent = new Panel();
             label_Humidity = new Label();
@@ -41,6 +41,7 @@
             label_Temperature = new Label();
             chart_Temperature = new System.Windows.Forms.DataVisualization.Charting.Chart();
             chart_Humidity = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            label_Test = new Label();
             panel_Humidity_Parent.SuspendLayout();
             panel_Temperature_Parent.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)chart_Temperature).BeginInit();
@@ -76,7 +77,7 @@
             progress_Humidity.SuperscriptText = "";
             progress_Humidity.TabIndex = 0;
             progress_Humidity.Text = "0%";
-            progress_Humidity.TextMargin = new Padding(4, 4, 0, 0);
+            progress_Humidity.TextMargin = new Padding(4, 1, 0, 0);
             progress_Humidity.Value = 10;
             // 
             // panel_Humidity_Parent
@@ -124,58 +125,67 @@
             // 
             // chart_Temperature
             // 
-            chartArea3.AxisX.LabelStyle.ForeColor = Color.FromArgb(255, 128, 0);
-            chartArea3.AxisX.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea3.AxisX.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea3.AxisX.MajorTickMark.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea3.AxisY.LabelStyle.ForeColor = Color.FromArgb(255, 128, 0);
-            chartArea3.AxisY.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea3.AxisY.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea3.AxisY.MajorTickMark.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea3.Name = "ChartArea1";
-            chart_Temperature.ChartAreas.Add(chartArea3);
-            legend3.IsTextAutoFit = false;
-            legend3.Name = "Legend1";
-            chart_Temperature.Legends.Add(legend3);
+            chartArea1.AxisX.LabelStyle.ForeColor = Color.FromArgb(255, 128, 0);
+            chartArea1.AxisX.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea1.AxisX.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea1.AxisX.MajorTickMark.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea1.AxisY.LabelStyle.ForeColor = Color.FromArgb(255, 128, 0);
+            chartArea1.AxisY.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea1.AxisY.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea1.AxisY.MajorTickMark.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea1.Name = "ChartArea1";
+            chart_Temperature.ChartAreas.Add(chartArea1);
+            legend1.IsTextAutoFit = false;
+            legend1.Name = "Legend1";
+            chart_Temperature.Legends.Add(legend1);
             chart_Temperature.Location = new Point(280, 27);
             chart_Temperature.Name = "chart_Temperature";
-            series3.BorderWidth = 2;
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series3.Color = Color.FromArgb(255, 128, 0);
-            series3.Legend = "Legend1";
-            series3.Name = "Temperature";
-            chart_Temperature.Series.Add(series3);
+            series1.BorderWidth = 2;
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series1.Color = Color.FromArgb(255, 128, 0);
+            series1.Legend = "Legend1";
+            series1.Name = "Temperature";
+            chart_Temperature.Series.Add(series1);
             chart_Temperature.Size = new Size(492, 197);
             chart_Temperature.TabIndex = 3;
             chart_Temperature.Text = "chart1";
             // 
             // chart_Humidity
             // 
-            chartArea4.AxisX.LabelStyle.ForeColor = Color.FromArgb(0, 192, 192);
-            chartArea4.AxisX.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea4.AxisX.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea4.AxisX.MajorTickMark.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea4.AxisY.LabelStyle.ForeColor = Color.FromArgb(0, 192, 192);
-            chartArea4.AxisY.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea4.AxisY.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea4.AxisY.MajorTickMark.LineColor = Color.FromArgb(235, 235, 235);
-            chartArea4.Name = "ChartArea1";
-            chart_Humidity.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            chart_Humidity.Legends.Add(legend4);
+            chartArea2.AxisX.LabelStyle.ForeColor = Color.FromArgb(0, 192, 192);
+            chartArea2.AxisX.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea2.AxisX.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea2.AxisX.MajorTickMark.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea2.AxisY.LabelStyle.ForeColor = Color.FromArgb(0, 192, 192);
+            chartArea2.AxisY.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea2.AxisY.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea2.AxisY.MajorTickMark.LineColor = Color.FromArgb(235, 235, 235);
+            chartArea2.Name = "ChartArea1";
+            chart_Humidity.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            chart_Humidity.Legends.Add(legend2);
             chart_Humidity.Location = new Point(280, 244);
             chart_Humidity.Name = "chart_Humidity";
-            series4.BorderWidth = 2;
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series4.Color = Color.FromArgb(0, 192, 192);
-            series4.Legend = "Legend1";
-            series4.Name = "Humidity";
-            chart_Humidity.Series.Add(series4);
+            series2.BorderWidth = 2;
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series2.Color = Color.FromArgb(0, 192, 192);
+            series2.Legend = "Legend1";
+            series2.Name = "Humidity";
+            chart_Humidity.Series.Add(series2);
             chart_Humidity.Size = new Size(492, 197);
             chart_Humidity.TabIndex = 4;
             chart_Humidity.Text = "chart2";
+            // 
+            // label_Test
+            // 
+            label_Test.AutoSize = true;
+            label_Test.Location = new Point(238, 9);
+            label_Test.Name = "label_Test";
+            label_Test.Size = new Size(38, 15);
+            label_Test.TabIndex = 5;
+            label_Test.Text = "label1";
             // 
             // MainPage
             // 
@@ -183,6 +193,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.LightGray;
             ClientSize = new Size(1041, 466);
+            Controls.Add(label_Test);
             Controls.Add(chart_Humidity);
             Controls.Add(chart_Temperature);
             Controls.Add(panel_Temperature_Parent);
@@ -196,6 +207,7 @@
             ((System.ComponentModel.ISupportInitialize)chart_Temperature).EndInit();
             ((System.ComponentModel.ISupportInitialize)chart_Humidity).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -207,5 +219,6 @@
         private Label label_Temperature;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart_Temperature;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart_Humidity;
+        private Label label_Test;
     }
 }
