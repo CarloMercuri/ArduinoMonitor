@@ -16,7 +16,9 @@ namespace ArduinoMonitor
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             NetComm.Instance.InitializeNetwork();
-            Application.Run(new MainPage());
+            NetworkDataProcessor p = new NetworkDataProcessor();
+            p.Initialize();
+            Application.Run(new MainPage(p));
         }
     }
 }

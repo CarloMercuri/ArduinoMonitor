@@ -23,6 +23,7 @@ namespace ArduinoMonitor.Frontend.Forms
         private int CurrentHumidity { get; set; }
         private int CurrentTemperature { get; set; }
 
+
         private int _maxHistoryCount = 40;
         private int _maxTemperature = 70;
         private int _minTemperature = -20;
@@ -30,11 +31,12 @@ namespace ArduinoMonitor.Frontend.Forms
         private int chart_Humidity_x = 1;
         private int chart_x_Max = 20;
 
+        private NetworkDataProcessor _netProcessor;
 
-
-        public MainPage()
+        public MainPage(NetworkDataProcessor networkProcessor)
         {
             InitializeComponent();
+            _netProcessor = networkProcessor;
             InitializeGUI();
             AssignDataToCharts();
         }
@@ -43,13 +45,13 @@ namespace ArduinoMonitor.Frontend.Forms
         {
             base.OnFormClosing(e);
             // Code
-            DataProcessor.ArduinoUpdateEvent -= ProcessArduinoUpdate;
+            NetworkDataProcessor.ArduinoUpdateEvent -= ProcessArduinoUpdate;
         }
 
         private void InitializeGUI()
         {
 
-            DataProcessor.ArduinoUpdateEvent += ProcessArduinoUpdate;
+            NetworkDataProcessor.ArduinoUpdateEvent += ProcessArduinoUpdate;
 
             chart_Humidity.ChartAreas[0].AxisY.Maximum = 100;
             chart_Humidity.ChartAreas[0].AxisY.Minimum = 0;
@@ -182,6 +184,16 @@ namespace ArduinoMonitor.Frontend.Forms
         private void AssignDataToCharts()
         {
             //chart_Temperature.seri
+        }
+
+        private void label_Test_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btn_ScoutNetwork_Click(object sender, EventArgs e)
+        {
+            _netProcessor.ScoutNetwork();
         }
     }
 }

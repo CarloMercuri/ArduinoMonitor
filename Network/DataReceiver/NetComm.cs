@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ArduinoMonitor.Network.DataHandler;
 using ArduinoMonitor.Network.Interfaces;
+using ArduinoMonitor.Network.Packets;
 
 namespace ArduinoMonitor.Network.DataReceiver
 {
@@ -22,7 +23,7 @@ namespace ArduinoMonitor.Network.DataReceiver
         private int _listeningPort = 25000;
 
         private IPAddress _localAddress;
-        private DataProcessor _processor;
+        private NetworkDataProcessor _processor;
 
         private static NetComm _instance = null;
         private static readonly object singletonLock = new object();
@@ -44,13 +45,14 @@ namespace ArduinoMonitor.Network.DataReceiver
 
         public void InitializeNetwork()
         {
-            _processor = new DataProcessor();
+            _processor = new NetworkDataProcessor();
             _processor.Initialize();
 
             _localAddress = IPAddress.Parse(GetLocalIPAddress());
             _listenerEP = new IPEndPoint(IPAddress.Any, _listeningPort);
             _socket = new UdpClient(_listeningPort);
             _socket.BeginReceive(new AsyncCallback(ReceiveCompletedCallback), null);
+
         }
 
         private void ReceiveCompletedCallback(IAsyncResult aResult)
@@ -73,7 +75,7 @@ namespace ArduinoMonitor.Network.DataReceiver
             //}
 
             // Forward the buffer directly
-            //DataProcessor.ProcessRawData(data, remoteEP);
+            _processor.ProcessRawData(data, remoteEP);
 
 
 
@@ -89,6 +91,17 @@ namespace ArduinoMonitor.Network.DataReceiver
         {
             _socket.SendAsync(data, data.Length, remoteEP);
         }
+
+        public void ScoutNetworkDevices()
+        {
+            ScoutPacket packet = new ScoutPacket();
+
+            SendByteArray(packet.ToByteArray(), new IPEndPoint(
+              IPAddress.Broadcast, 25000
+              ));
+
+        }
+
 
         /// <summary>
         /// Returns the local IP address of the machine

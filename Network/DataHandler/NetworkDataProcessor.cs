@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 
 namespace ArduinoMonitor.Network.DataHandler
 {
-    public class DataProcessor
+    public class NetworkDataProcessor
     {
         public static event EventHandler<ArduinoUpdateEventModel> ArduinoUpdateEvent;
+        private NetComm _netComm;
         
         public void Initialize()
         {
+            _netComm = NetComm.Instance;
             Task t1 = Task.Factory.StartNew(() => { this.FakeArduinoInputs(); });
         }
 
@@ -51,6 +53,11 @@ namespace ArduinoMonitor.Network.DataHandler
             }
         }
 
+        public void ScoutNetwork()
+        {
+            _netComm.ScoutNetworkDevices();
+        }
+
         public void ProcessRawData(byte[] data, IPEndPoint endPoint)
         {
             // Grab the first 4 bytes, which are the packet type
@@ -61,7 +68,11 @@ namespace ArduinoMonitor.Network.DataHandler
                 case "_UPD":
                     ArduinoUpdateEventModel updateData = ExtractUpdateData(data);
                     ArduinoUpdateEvent?.Invoke(null, updateData);
-                    break;               
+                    break;
+
+                case "_SRP":
+                    Console.WriteLine();
+                    break;
             }
         }
 
