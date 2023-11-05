@@ -1,10 +1,12 @@
 ﻿using ArduinoMonitor.Network.DataReceiver;
 using ArduinoMonitor.Network.Interfaces;
 using ArduinoMonitor.Network.Models;
+using ArduinoMonitor.Network.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,11 +16,12 @@ namespace ArduinoMonitor.Network.DataHandler
     {
         public static event EventHandler<ArduinoUpdateEventModel> ArduinoUpdateEvent;
         private NetComm _netComm;
+        private IPEndPoint targetEndpoint;
         
         public void Initialize()
         {
             _netComm = NetComm.Instance;
-            Task t1 = Task.Factory.StartNew(() => { this.FakeArduinoInputs(); });
+            //Task t1 = Task.Factory.StartNew(() => { this.FakeArduinoInputs(); });
         }
 
         private void FakeArduinoInputs()
@@ -71,9 +74,56 @@ namespace ArduinoMonitor.Network.DataHandler
                     break;
 
                 case "_SRP":
-                    Console.WriteLine();
+                    targetEndpoint = endPoint;
+                    TransferStartPacket packet = new TransferStartPacket();
+                    _netComm.SendByteArray(packet.ToByteArray(), new IPEndPoint(
+                      targetEndpoint.Address, 25000
+                      ));
+                    break;
+
+                case "_DTP":
+                    ReadDataPacket(data);
                     break;
             }
+        }
+
+        private void ReadDataPacket(byte[] data)
+        {
+            PacketsReader _reader = new PacketsReader();
+            ArduinoUpdateEventModel updateEventModel = new ArduinoUpdateEventModel();
+
+            int index = 4; // we start after the signature
+
+            int number_of_variables = data[index];
+            index++;
+
+            for (int i = 0; i < number_of_variables; i++)
+            {
+                int varNameLength = data[index];
+                index++;
+
+                string varName = _reader.ReadString(data, ref index, varNameLength).ToLower();
+                int varType = data[index];
+                index++;
+
+                switch (varName)
+                {
+                    case "temperature":
+                        updateEventModel.Temperature = _reader.ReadShort(data, ref index);
+                        break;
+                    case "humidity":
+                        updateEventModel.Humidity = _reader.ReadShort(data, ref index);
+                        break;
+                    case "xaxis":
+                        updateEventModel.xAxis = _reader.ReadShort(data, ref index);
+                        break;
+                    case "yaxis":
+                        updateEventModel.yAxis = _reader.ReadShort(data, ref index);
+                        break;
+                }
+            }
+
+            ArduinoUpdateEvent?.Invoke(null, updateEventModel);
         }
 
         private ArduinoUpdateEventModel ExtractUpdateData(byte[] data)

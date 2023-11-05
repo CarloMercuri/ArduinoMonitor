@@ -31,6 +31,21 @@ namespace ArduinoMonitor.Frontend.Forms
         private int chart_Humidity_x = 1;
         private int chart_x_Max = 20;
 
+
+        // Picturebox
+        private int pBox_Size = 220;
+
+        // Premade this calculation, to save it on the drawing 
+        private float pBox_perCent_Unit = 2.2f;
+
+        private Point joystick_ball_location;
+        private Point joystick_calibration_adjustment = new Point(0, 0);
+        private int joystick_ball_size = 20;
+        private int joystick_ball_half_size = 10;
+        private Point joystick_raw_axis = new Point(0, 0);
+        private Pen pBox_OuterCirclePen = new Pen(Color.FromArgb(255, 0, 255, 0), 4);
+        private Brush pBox_JoystickCircleBrush = new SolidBrush(Color.White);
+
         private NetworkDataProcessor _netProcessor;
 
         public MainPage(NetworkDataProcessor networkProcessor)
@@ -120,7 +135,16 @@ namespace ArduinoMonitor.Frontend.Forms
             label_TemperatureMeasurement.ForeColor = GUIConstants.COLOR_TemperatureBarFill;
             panel_Temperature_Parent.Controls.Add(label_TemperatureMeasurement);
 
+            //
+            // Joystick Picturebox
+            //
+            pBox_Joystick.Size = new Size(pBox_Size, pBox_Size);
+            pBox_Joystick.Location = new Point(2, 2);
+            pBox_Joystick.Paint += new PaintEventHandler(JoystickPBoxPaint);
 
+            joystick_ball_location = new Point(pBox_Joystick.Size.Width / 2,
+                                               pBox_Joystick.Size.Height / 2);
+            pBox_Joystick.Invalidate();
         }
 
         private void ProcessArduinoUpdate(object? sender, ArduinoUpdateEventModel e)
@@ -159,6 +183,37 @@ namespace ArduinoMonitor.Frontend.Forms
             label_TemperatureMeasurement.Text = $"{e.Temperature} °C";
             progress_Humidity.Text = $"{e.Humidity}%";
 
+            //
+            // Joystick
+            //
+
+            // The values we are getting from the Arduino go from 0 to 1024 (capping it at 1000 for simplicity)
+            // First We divide it by 100 and floor it, which basically gives us a percent value from 0 to 100
+            // That's what we are going to use to display the circle
+            if (e.xAxis > 1000) e.xAxis = 1000;
+            if (e.yAxis > 1000) e.yAxis = 1000;
+
+            joystick_raw_axis = new Point(e.xAxis, e.yAxis);
+
+            // Percent values
+            //int xAxis_normalized = (int)Math.Floor((decimal)e.xAxis / 10M);
+            //int YAxis_normalized = (int)Math.Floor((decimal)e.yAxis / 10M);
+            int xPercent = 0;
+            if(joystick_calibration_adjustment.X > 0)
+            {
+                xPercent = joystick_calibration_adjustment.X * 2;
+            }
+
+            int yPercent = 0;
+            if (joystick_calibration_adjustment.Y > 0)
+            {
+                yPercent = joystick_calibration_adjustment.Y * 2;
+            }
+
+            int ball_x = (int)(pBox_perCent_Unit * (e.xAxis - (50 / 100 * xPercent)));
+            int ball_y = (int)(pBox_perCent_Unit * (e.yAxis + joystick_calibration_adjustment.Y));
+
+            joystick_ball_location = new Point(ball_x, ball_y);
 
             // Add to the collections for the charts, capping it at maxHistoryCount
 
@@ -179,6 +234,26 @@ namespace ArduinoMonitor.Frontend.Forms
             //{
             //    chart_Humidity.Series[0].Points.RemoveAt(0);
             //}
+
+            label_Test.Text = $"Temp: {e.Humidity}. Humidity: {e.Humidity}. X-Axis: {e.xAxis}. Y-Axis: {e.yAxis}";
+
+            pBox_Joystick.Invalidate();
+        }
+
+        private void JoystickPBoxPaint(object sender, PaintEventArgs e)
+        {
+            PictureBox pBox = sender as PictureBox;
+
+            // Outer circle
+            e.Graphics.DrawEllipse(pBox_OuterCirclePen, 5, 5, pBox_Size - 10, pBox_Size - 10);
+
+            // We are setting the coordinates from the arduino input to the MIDDLE of the circle,
+            // so we have to adjust for that
+            e.Graphics.FillEllipse(pBox_JoystickCircleBrush,
+                                   joystick_ball_location.X - joystick_ball_half_size,
+                                   joystick_ball_location.Y - joystick_ball_half_size,
+                                   joystick_ball_size,
+                                   joystick_ball_size);
         }
 
         private void AssignDataToCharts()
@@ -194,6 +269,11 @@ namespace ArduinoMonitor.Frontend.Forms
         private void btn_ScoutNetwork_Click(object sender, EventArgs e)
         {
             _netProcessor.ScoutNetwork();
+        }
+
+        private void btn_Calibrate_Click(object sender, EventArgs e)
+        {
+            joystick_calibration_adjustment = new Point((50 - joystick_raw_axis.X), (50 - joystick_raw_axis.Y));
         }
     }
 }
